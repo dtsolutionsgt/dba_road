@@ -1,0 +1,11 @@
+ALTER TABLE D_CANASTA  ADD PESOENTR FLOAT NOT NULL DEFAULT 0;
+
+EXEC sp_rename 'D_CANASTA.ruta', 'RUTA';  
+EXEC sp_rename 'D_CANASTA.fecha', 'FECHA';  
+EXEC sp_rename 'D_CANASTA.cliente', 'CLIENTE';  
+EXEC sp_rename 'D_CANASTA.codigo', 'PRODUCTO';  
+EXEC sp_rename 'D_CANASTA.cantrec', 'CANTREC';  
+EXEC sp_rename 'D_CANASTA.cantentr', 'CANTENTR';  
+EXEC sp_rename 'D_CANASTA.statcom', 'STATCOM';  
+EXEC sp_rename 'D_CANASTA.factura', 'CORELTRANS';  
+EXEC sp_rename 'D_CANASTA.peso', 'PESOREC';  
