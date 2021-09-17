@@ -1,0 +1,4 @@
+INSERT INTO P_PARAMEXT VALUES(25,'Modificar Nombre del cliente','N')
+INSERT INTO P_PARAMEXT VALUES(26,'Modificar NIT del cliente','N')
+INSERT INTO P_PARAMEXT VALUES(27,'Modificar Canal del cliente','S')
+INSERT INTO P_PARAMEXT VALUES(28,'Modificar Subcanal del cliente','S')
