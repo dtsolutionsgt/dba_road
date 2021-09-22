@@ -1,4 +1,4 @@
-/****** Object:  Table [dbo].[D_CLIENTE_MODIF]    Script Date: 17/09/2021 12:35:51 ******/
+/****** Object:  Table [dbo].[D_CLIENTE_MODIF]    Script Date: 22/09/2021 10:10:07 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -18,10 +18,9 @@ CREATE TABLE [dbo].[D_CLIENTE_MODIF](
 	[NIVELPRECIO] [int] NULL,
 	[MEDIAPAGO] [nvarchar](3) NULL,
 	[LIMITECREDITO] [float] NULL,
-	[DIACREDITO] [int] NOT NULL,
+	[DIACREDITO] [int] NULL,
 	[DESCUENTO] [nvarchar](1) NULL,
 	[BONIFICACION] [nvarchar](1) NULL,
-	[ULTVISITA] [datetime] NULL,
 	[IMPSPEC] [float] NULL,
 	[INVTIPO] [nvarchar](1) NULL,
 	[INVEQUIPO] [nvarchar](1) NULL,
@@ -30,42 +29,31 @@ CREATE TABLE [dbo].[D_CLIENTE_MODIF](
 	[INV3] [nvarchar](1) NULL,
 	[NIT] [nvarchar](30) NULL,
 	[MENSAJE] [nvarchar](1) NULL,
-	[EMAIL] [nvarchar](50) NULL,
-	[ESERVICE] [nvarchar](5) NULL,
 	[TELEFONO] [nvarchar](30) NULL,
 	[DIRTIPO] [nvarchar](1) NULL,
 	[DIRECCION] [nvarchar](254) NULL,
-	[REGION] [nvarchar](10) NULL,
 	[SUCURSAL] [nvarchar](10) NULL,
-	[MUNICIPIO] [nvarchar](15) NULL,
-	[CIUDAD] [nvarchar](50) NULL,
-	[ZONA] [smallint] NULL,
-	[COLONIA] [nvarchar](50) NULL,
-	[AVENIDA] [nvarchar](50) NULL,
-	[CALLE] [nvarchar](50) NULL,
-	[NUMERO] [nvarchar](20) NULL,
-	[CARTOGRAFICO] [nvarchar](25) NULL,
 	[COORX] [float] NULL,
 	[COORY] [float] NULL,
 	[BODEGA] [nvarchar](15) NULL,
-	[COD_PAIS] [nvarchar](10) NOT NULL,
+	[COD_PAIS] [nvarchar](10) NULL,
 	[FIRMADIG] [nvarchar](1) NULL,
-	[CODBARRA] [nvarchar](50) NOT NULL,
+	[CODBARRA] [nvarchar](50) NULL,
 	[VALIDACREDITO] [nvarchar](1) NULL,
 	[FACT_VS_FACT] [nvarchar](1) NULL,
-	[CHEQUEPOST] [nvarchar](50) NOT NULL,
-	[PRECIO_ESTRATEGICO] [nvarchar](1) NOT NULL,
-	[NOMBRE_PROPIETARIO] [nvarchar](50) NOT NULL,
-	[NOMBRE_REPRESENTANTE] [nvarchar](50) NOT NULL,
-	[PERCEPCION] [float] NOT NULL,
-	[TIPO_CONTRIBUYENTE] [nvarchar](1) NOT NULL,
-	[ID_DESPACHO] [int] NOT NULL,
-	[ID_FACTURACION] [int] NOT NULL,
-	[MODIF_PRECIO] [bit] NOT NULL,
-	[INGRESA_CANASTAS] [bit] NOT NULL,
+	[CHEQUEPOST] [nvarchar](50) NULL,
+	[PRECIO_ESTRATEGICO] [nvarchar](1) NULL,
+	[NOMBRE_PROPIETARIO] [nvarchar](50) NULL,
+	[NOMBRE_REPRESENTANTE] [nvarchar](50) NULL,
+	[PERCEPCION] [float] NULL,
+	[TIPO_CONTRIBUYENTE] [nvarchar](1) NULL,
+	[ID_DESPACHO] [int] NULL,
+	[ID_FACTURACION] [int] NULL,
+	[MODIF_PRECIO] [bit] NULL,
+	[INGRESA_CANASTAS] [bit] NULL,
 	[PRIORIZACION] [varchar](25) NULL,
-	[STATCOM] [nvarchar](1) NOT NULL,
-	[FECHA_SISTEMA] [datetime] NOT NULL,
+	[STATCOM] [nvarchar](1) NULL,
+	[FECHA_SISTEMA] [datetime] NULL,
  CONSTRAINT [PK_D_CLIENTE_MODIF] PRIMARY KEY CLUSTERED 
 (
 	[COREL] ASC
@@ -78,5 +66,7 @@ GO
 
 ALTER TABLE [dbo].[D_CLIENTE_MODIF] ADD  CONSTRAINT [DF_D_CLIENTE_MODIF_FECHA_SISTEMA]  DEFAULT (getdate()) FOR [FECHA_SISTEMA]
 GO
+
+
 
 
