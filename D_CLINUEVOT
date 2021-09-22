@@ -1,0 +1,64 @@
+/****** Object:  Table [dbo].[D_CLINUEVOT]    Script Date: 22/09/2021 10:07:35 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[D_CLINUEVOT](
+	[CODIGO] [nvarchar](15) NOT NULL,
+	[RUTA] [nvarchar](15) NOT NULL,
+	[FECHA] [datetime] NULL,
+	[NOMBRE] [nvarchar](50) NULL,
+	[NEGOCIO] [nvarchar](50) NULL,
+	[DIRECCION] [nvarchar](100) NULL,
+	[TELEFONO] [nvarchar](25) NULL,
+	[NIT] [nvarchar](25) NULL,
+	[TIPONEG] [nvarchar](20) NULL,
+	[NIVPRECIO] [int] NULL,
+	[DIA1] [nvarchar](1) NULL,
+	[DIA2] [nvarchar](1) NULL,
+	[DIA3] [nvarchar](1) NULL,
+	[DIA4] [nvarchar](1) NULL,
+	[DIA5] [nvarchar](1) NULL,
+	[DIA6] [nvarchar](1) NULL,
+	[DIA7] [nvarchar](1) NULL,
+	[ORDVIS] [int] NULL,
+	[BAND1] [nvarchar](5) NULL,
+	[BAND2] [nvarchar](5) NULL,
+	[STATCOM] [nvarchar](1) NULL,
+	[IMAGEN] [image] NULL,
+	[CODIGO_ERP] [nvarchar](20) NULL,
+	[COORX] [float] NULL,
+	[COORY] [float] NULL,
+	[DEPARTAMENTO] [nvarchar](15) NULL,
+	[MUNICIPIO] [nvarchar](15) NULL,
+	[CIUDAD] [nvarchar](100) NULL,
+	[EMAIL] [nvarchar](100) NULL,
+	[CONTACTO] [nvarchar](200) NULL,
+	[CANAL] [nvarchar](10) NULL,
+	[SUBCANAL] [nvarchar](10) NULL,
+	[VENDEDOR] [nvarchar](15) NULL,
+	[CSPOLLO] [float] NULL,
+	[CSEMBUTIDO] [float] NULL,
+	[CSHUEVO] [float] NULL,
+	[CSRES] [float] NULL,
+	[CSCERDO] [float] NULL,
+	[CSCONGELADOS] [float] NULL,
+	[CSSALSAS] [float] NULL,
+ CONSTRAINT [PK_D_CLINUEVOT] PRIMARY KEY CLUSTERED 
+(
+	[CODIGO] ASC,
+	[RUTA] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[D_CLINUEVOT]  WITH NOCHECK ADD  CONSTRAINT [FK_D_CLINUEVOT_P_RUTA] FOREIGN KEY([RUTA])
+REFERENCES [dbo].[P_RUTA] ([CODIGO])
+GO
+
+ALTER TABLE [dbo].[D_CLINUEVOT] CHECK CONSTRAINT [FK_D_CLINUEVOT_P_RUTA]
+GO
+
+
