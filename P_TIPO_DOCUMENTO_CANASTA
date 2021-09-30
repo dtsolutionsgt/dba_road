@@ -1,9 +1,11 @@
-/****** Object:  Table [dbo].[P_TIPO_DOCUMENTO_CANASTA]    Script Date: 20/08/2021 17:42:02 ******/
+/****** Object:  Table [dbo].[P_CANASTA_TIPO_DOCUMENTO]    Script Date: 30/09/2021 01:09:03 ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[P_TIPO_DOCUMENTO_CANASTA](
+
+CREATE TABLE [dbo].[P_CANASTA_TIPO_DOCUMENTO](
 	[ID_TIPO_DOCUMENTO] [int] NOT NULL,
 	[CODIGO] [nvarchar](15) NULL,
 	[DESCRIPCION] [nvarchar](200) NULL,
@@ -13,8 +15,10 @@ CREATE TABLE [dbo].[P_TIPO_DOCUMENTO_CANASTA](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-INSERT [dbo].[P_TIPO_DOCUMENTO_CANASTA] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (1, N'AJCLI', N' Ajuste cliente  (actualizar tabla de clientes)')
-INSERT [dbo].[P_TIPO_DOCUMENTO_CANASTA] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (2, N'AJRUTA', N'Ajuste ruta  (actualizar tabla de ruta)')
-INSERT [dbo].[P_TIPO_DOCUMENTO_CANASTA] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (3, N'MOV', N' Mov  - (actualizar tabla de clientes y de ruta)')
-INSERT [dbo].[P_TIPO_DOCUMENTO_CANASTA] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (4, N'DLFCR', N'DL canastas recolectadas ( actualizar tabla de ruta)')
-INSERT [dbo].[P_TIPO_DOCUMENTO_CANASTA] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (5, N'DLFCP', N'DL canastas paseantes ( actualizar tabla de ruta)')
+
+
+INSERT [dbo].[P_CANASTA_TIPO_DOCUMENTO] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (1, N'AJCLI', N' Ajuste cliente  (actualizar tabla de clientes)')
+INSERT [dbo].[P_CANASTA_TIPO_DOCUMENTO] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (2, N'AJRUTA', N'Ajuste ruta  (actualizar tabla de ruta)')
+INSERT [dbo].[P_CANASTA_TIPO_DOCUMENTO] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (3, N'MOV', N' Mov  - (actualizar tabla de clientes y de ruta)')
+INSERT [dbo].[P_CANASTA_TIPO_DOCUMENTO] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (4, N'DLFCR', N'DL canastas recolectadas ( actualizar tabla de ruta)')
+INSERT [dbo].[P_CANASTA_TIPO_DOCUMENTO] ([ID_TIPO_DOCUMENTO], [CODIGO], [DESCRIPCION]) VALUES (5, N'DLFCP', N'DL canastas paseantes ( actualizar tabla de ruta)')
