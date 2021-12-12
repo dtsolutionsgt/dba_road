@@ -1,0 +1,46 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Carolina Fuentes
+-- Create date: 12-12-2021
+-- Description:	Inicializar valores del cliente 
+-- =============================================
+CREATE TRIGGER Inicializa_Valores_Cliente
+   ON  [dbo].[P_CLIENTE]
+   FOR UPDATE
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+
+    -- Insert statements for trigger here
+	UPDATE P_CLIENTE
+			SET MEDIAPAGO = 3
+			WHERE  CODIGO IN( SELECT CODIGO FROM INSERTED)
+END
+
+/****** Object:  Trigger [dbo].[Inicializa_Valores]    Script Date: 12/12/2021 15:31:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Carolina Fuentes
+-- Create date: 12-12-2021
+-- Description:	Inicializar valores de la ruta 
+-- =============================================
+ALTER TRIGGER [dbo].[Inicializa_Valores]
+   ON  [dbo].[P_RUTA]
+   FOR UPDATE
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+
+    -- Insert statements for trigger here
+	UPDATE P_RUTA
+			SET IMPRESION = 'S'
+			WHERE  CODIGO IN( SELECT CODIGO FROM INSERTED)
+END
