@@ -17,7 +17,7 @@ BEGIN
 
     -- Insert statements for trigger here
 	UPDATE P_CLIENTE
-			SET MEDIAPAGO = 3
+			SET BODEGA = 'S'
 			WHERE  CODIGO IN( SELECT CODIGO FROM INSERTED)
 END
 
