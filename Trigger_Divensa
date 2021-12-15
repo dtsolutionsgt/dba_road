@@ -1,3 +1,4 @@
+/****** Object:  Trigger [dbo].[Inicializa_Valores_Cliente]    Script Date: 15/12/2021 09:16:12 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -7,7 +8,7 @@ GO
 -- Create date: 12-12-2021
 -- Description:	Inicializar valores del cliente 
 -- =============================================
-CREATE TRIGGER Inicializa_Valores_Cliente
+ALTER TRIGGER [dbo].[Inicializa_Valores_Cliente]
    ON  [dbo].[P_CLIENTE]
    FOR UPDATE
 AS 
@@ -17,7 +18,7 @@ BEGIN
 
     -- Insert statements for trigger here
 	UPDATE P_CLIENTE
-			SET BODEGA = 'S'
+			SET BODEGA = 'S', CHEQUEPOST = 'S'
 			WHERE  CODIGO IN( SELECT CODIGO FROM INSERTED)
 END
 
