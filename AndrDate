@@ -1,0 +1,39 @@
+/****** Object:  UserDefinedFunction [dbo].[AndrDate]    Script Date: 02/08/2022 11:53:54 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER FUNCTION [dbo].[AndrDate]
+(@ddate AS datetime)
+
+returns bigint
+AS
+
+BEGIN
+
+DECLARE @rv bigint
+DECLARE @vy bigint
+DECLARE @vm bigint
+DECLARE @vd bigint
+DECLARE @vh bigint
+DECLARE @vmi bigint
+DECLARE @vsg bigint
+
+SET @vy = CAST(YEAR(@ddate) AS bigint)
+SET @vm = CAST(MONTH(@ddate) AS bigint)
+SET @vd = CAST(DAY(@ddate) AS bigint)
+SET @vh =  CAST(DATEPART(hour, @ddate) AS bigint)
+SET @vmi = CAST(DATEPART(minute, @ddate) AS bigint)
+SET @vsg = CAST(DATEPART(SECOND, @ddate) AS bigint)
+SET @rv= @vy*10000+@vm*100+@vd
+SET @rv= @rv*10000+@vh*100+@vmi
+SET @rv= (@rv*100) + @vsg
+
+RETURN @rv
+
+END
+GO
+
+
