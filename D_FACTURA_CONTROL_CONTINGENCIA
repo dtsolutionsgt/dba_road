@@ -1,0 +1,23 @@
+CREATE TABLE [dbo].[D_FACTURA_CONTROL_CONTINGENCIA](		
+	[IdTablaControl] [int] IDENTITY(1,1) NOT NULL,	
+	[Cufe] [varchar](66) NULL,	
+	[TipoDocumento] [varchar](2) NULL,	
+	[NumeroDocumento] [varchar](10) NULL,	
+	[Sucursal] [varchar](4) NULL,	
+	[Caja] [varchar](3) NULL,	
+	[Estado] [varchar](3) NULL,	
+	[Mensaje] [varchar](max) NULL,	
+	[Valor_XML] [XML] NULL,	
+	[FechaEnvio] [datetime] NULL,	
+	[TipoFactura] [varchar](2) NULL,
+	[Fecha_Agr] [datetime] NULL,
+	[QR] [varchar](max) NULL,	
+	[COREL] [varchar](20) NULL,				
+ CONSTRAINT [PK_EDControl] PRIMARY KEY CLUSTERED 		
+(		
+	[IdTablaControl] ASC	
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]		
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]		
+GO		
+	
+
