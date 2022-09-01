@@ -1,3 +1,3 @@
 ALTER TABLE MI3_SAP
-ADD [Cufe] [varchar](66) NULL,	
-[QR] [varchar](max) NULL
+ADD [FEL_CUFE] [varchar](66) NULL,	
+[FEL_COIGO_QR] [varchar](max) NULL
