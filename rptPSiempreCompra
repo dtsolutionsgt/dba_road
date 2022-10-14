@@ -1,0 +1,49 @@
+/****** Object:  StoredProcedure [dbo].[rptPSiempreCompra]    Script Date: 10/10/2022 21:41:53 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[rptPSiempreCompra] 
+	@FechaInicio as DATETIME, 
+	@FechaFin as DATETIME,
+	@Sucursal as NVARCHAR(10)
+AS
+BEGIN
+
+	SET NOCOUNT ON;
+	 declare @Producto as table (cliente nvarchar(15), producto nvarchar(15), cantidad int)
+	 declare @Cliente as table (cliente nvarchar(15), cantidad int)
+	 
+	 INSERT INTO @Producto 
+		SELECT	D_FACTURA.CLIENTE as cliente, D_FACTURAD.PRODUCTO as producto, COUNT(DISTINCT D_FACTURAD.COREL) AS CANTIDAD
+		FROM	D_FACTURAD INNER JOIN D_FACTURA ON D_FACTURAD.COREL = D_FACTURA.COREL
+		WHERE     (D_FACTURAD.ANULADO = N'N') and (convert(DATETIME,D_FACTURA.FECHA) between @fechainicio and @fechafin)
+		GROUP BY D_FACTURA.CLIENTE, D_FACTURAD.PRODUCTO
+	
+	INSERT INTO @Cliente 
+		SELECT D_FACTURA.CLIENTE as cliente, COUNT(DISTINCT D_FACTURA.COREL) AS CANTIDAD
+		FROM D_FACTURA
+		WHERE     (D_FACTURA.ANULADO = N'N') and (convert(DATETIME,D_FACTURA.FECHA) between @fechainicio and @fechafin)
+		GROUP BY D_FACTURA.CLIENTE
+		
+	 SELECT	P.cliente, P_CLIENTE.NOMBRE as NOMBRECLIENTE, P.producto, P_PRODUCTO.DESCLARGA as NOMBREPRODUCTO
+	 FROM	@Producto as P INNER JOIN P_CLIENTE ON P.cliente = P_CLIENTE.CODIGO
+						   INNER JOIN P_PRODUCTO ON P.producto = P_PRODUCTO.CODIGO
+						   INNER JOIN @Cliente as C ON P.cliente = C.cliente and p.cantidad = c.cantidad
+	 WHERE P_CLIENTE.SUCURSAL = @Sucursal
+	 ORDER BY P.cliente 
+	 --(SELECT COUNT(COREL) AS CANTF FROM D_FACTURA AS f WHERE (f.CLIENTE = p.cliente and f.ANULADO = 'N' and (f.FECHA between @FechaInicio and @FechaFin)))
+
+END
+
+GO
+
+
