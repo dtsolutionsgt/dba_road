@@ -18,3 +18,8 @@ INSERT INTO P_MENUSISTEMA VALUES('8',	1,'Canastas	mnuCanastas',	1	,8)
 INSERT INTO P_MENUROL VALUES(1, 3900, '8',1,1)
 INSERT INTO P_MENUSISTEMA VALUES('8.1',	1,'Reporte de transacciones	mnuConsultaCanastas',	2, 8)
 INSERT INTO P_MENUROL VALUES(1, 3900, '8.1',1,1)
+
+INSERT INTO P_MENUSISTEMA VALUES('1.9.9',1,'Razón de factura pendiente','tsmiRazonFacturaPendiente',3,'1.9')
+INSERT INTO P_MENUROL VALUES(1, 3900, '1.9.9',1,1)
+INSERT INTO P_MENUSISTEMA VALUES('1.9.10',	1,'Razón de liquidación pendiente','tsmiRazonLiquidacionPendiente',	3, '1.9')
+INSERT INTO P_MENUROL VALUES(1, 3900, '1.9.10',1,1)
