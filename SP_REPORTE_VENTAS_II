@@ -1,6 +1,3 @@
-USE [ROADSAP_QAS]
-GO
-
 /****** Object:  StoredProcedure [dbo].[SP_REPORTE_VENTAS_II]    Script Date: 11/10/2022 17:44:25 ******/
 SET ANSI_NULLS ON
 GO
