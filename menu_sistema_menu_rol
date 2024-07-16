@@ -1,3 +1,12 @@
+--2024-07-15 Parametrizar permiso a la liquidación de canastas
+INSERT INTO P_MENUSISTEMA VALUES('2.21',1,'Liquidación de canastas','mnuNuevaLiquidacionCanastas',	2,'2')
+INSERT INTO P_MENUROL VALUES(1, 3900, '2.21',1,1)
+INSERT INTO P_MENUROL VALUES(13, 3903, '2.21',1,1)
+INSERT INTO P_MENUROL VALUES(14, 3903, '2.21',1,1)
+INSERT INTO P_MENUROL VALUES(41, 3905, '2.21',1,1)
+INSERT INTO P_MENUROL VALUES(42, 3905, '2.21',1,1)
+INSERT INTO P_MENUROL VALUES(27, 3904, '2.21',1,1)
+
 2024-06-12 Monto mínimo pedidos para clientes
 INSERT INTO P_MENUSISTEMA VALUES('1.4.9',1,'Monto mínimo pedidos','tsmiMontoMinimoPedidos',	2,'1.4')
 INSERT INTO P_MENUROL VALUES(1, 3900, '1.4.9',1,1)
