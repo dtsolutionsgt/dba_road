@@ -1,3 +1,431 @@
+USE [ROADSAP]
+GO
+
+/****** Object:  StoredProcedure [dbo].[SP_COMPARATIVO_HISTORICO]    Script Date: 26-Sep-24 10:56:41 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		Carolina Fuentes
+-- Create date: 26-09-2024
+-- Description:	Comparativo de la sincronización a la BD Histórica, hice algunas modificaciones
+-- =============================================
+ALTER PROCEDURE [dbo].[SP_COMPARATIVO_HISTORICO]
+	@FechaInicial date, 
+	@FechaFinal date,
+	@Registros int OUTPUT
+AS
+BEGIN
+
+    IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[P_COMPARATIVO_HISTORICO]') AND type in (N'U'))
+	DROP TABLE [dbo].[P_COMPARATIVO_HISTORICO]
+	
+	SELECT t.Tabla, t.año, t.mes, t.dia, SUM(t.Cant_Reg) Cant_Reg, SUM(t.Cant_Reg_Hist) Cant_Reg_Hist, SUM(t.Cant_Reg) - SUM(t.Cant_Reg_Hist) Diferencia
+	INTO P_COMPARATIVO_HISTORICO
+	FROM (
+	SELECT 'D_FACTURA' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	FROM ROADSAP_HIST_4.dbo.D_FACTURA
+	WHERE  fecha between @FechaInicial and @FechaFinal
+	GROUP BY  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	SELECT 'D_FACTURA' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FACTURA
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_FACTURAD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FACTURAD D INNER JOIN D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FACTURAD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_FACTURAD D INNER JOIN ROADSAP_HIST_4.dbo.D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FACTURAD_LOTES' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FACTURAD_LOTES D INNER JOIN D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FACTURAD_LOTES' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_FACTURAD_LOTES D INNER JOIN ROADSAP_HIST_4.dbo.D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FACTURAP' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FACTURAP D INNER JOIN D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FACTURAP' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_FACTURAP D INNER JOIN ROADSAP_HIST_4.dbo.D_FACTURA E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBRO' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_COBRO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_COBRO' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_COBRO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_COBROD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_COBROD D INNER JOIN D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBROD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_COBROD D INNER JOIN ROADSAP_HIST_4.dbo.D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBROD_SR' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_COBROD_SR D INNER JOIN D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBROD_SR' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_COBROD_SR D INNER JOIN ROADSAP_HIST_4.dbo.D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBROP' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_COBROP D INNER JOIN D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_COBROP' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_COBROP D INNER JOIN ROADSAP_HIST_4.dbo.D_COBRO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_NOTACRED' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_NOTACRED
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_NOTACRED' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_NOTACRED
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_NOTACREDD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_NOTACREDD D INNER JOIN D_NOTACRED E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_NOTACREDD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_NOTACREDD D INNER JOIN ROADSAP_HIST_4.dbo.D_NOTACRED E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_CXC' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_CXC
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_CXC' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_CXC
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_CXCD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_CXCD D INNER JOIN D_CXC E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_CXCD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_CXCD D INNER JOIN ROADSAP_HIST_4.dbo.D_CXC E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_CLINUEVO' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from D_CLINUEVO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_CLINUEVO' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_CLINUEVO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_CLINUEVOT' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from D_CLINUEVOT
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_CLINUEVOT' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_CLINUEVOT
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_ATENCION' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(RUTA) Cant_Reg, 0 Cant_Reg_Hist
+	from D_ATENCION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_ATENCION' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(RUTA) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_ATENCION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_DEPOS' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(RUTA) Cant_Reg, 0 Cant_Reg_Hist
+	from D_DEPOS
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_DEPOS' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(RUTA) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_DEPOS
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_DEPOSD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_DEPOSD D INNER JOIN D_DEPOS E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_DEPOSD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_DEPOSD D INNER JOIN ROADSAP_HIST_4.dbo.D_DEPOS E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_DEPOSB' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_DEPOSB D INNER JOIN D_DEPOS E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_DEPOSB' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_DEPOSB D INNER JOIN ROADSAP_HIST_4.dbo.D_DEPOS E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_FINDIA' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(RUTA) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FINDIA
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_FINDIA' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(RUTA) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_FINDIA
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_MOV' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_MOV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_MOV' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_MOV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_MOVD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_MOVD D INNER JOIN D_MOV E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_MOVD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_MOVD D INNER JOIN ROADSAP_HIST_4.dbo.D_MOV E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_MOVDB' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_MOVDB D INNER JOIN D_MOV E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_MOVDB' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_MOVDB D INNER JOIN ROADSAP_HIST_4.dbo.D_MOV E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_PEDIDO' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_PEDIDO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_PEDIDO' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_PEDIDO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_PEDIDOD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_PEDIDOD D INNER JOIN D_PEDIDO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_PEDIDOD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_PEDIDOD D INNER JOIN ROADSAP_HIST_4.dbo.D_PEDIDO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'DS_PEDIDO' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from DS_PEDIDO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'DS_PEDIDO' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.DS_PEDIDO
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'DS_PEDIDOD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from DS_PEDIDOD D INNER JOIN DS_PEDIDO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'DS_PEDIDOD' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg,count(D.COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.DS_PEDIDOD D INNER JOIN ROADSAP_HIST_4.dbo.DS_PEDIDO E ON D.COREL = E.COREL
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'D_STOCKB_DEV' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(BARRA) Cant_Reg, 0 Cant_Reg_Hist
+	from D_STOCKB_DEV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_STOCKB_DEV' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(BARRA) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_STOCKB_DEV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'MI3_SAP' Tabla, datepart(year, FECHAOPERACION) año, datepart(month, FECHAOPERACION) mes, datepart(day, FECHAOPERACION) dia, count(CODIGOLIQUIDACION) Cant_Reg, 0 Cant_Reg_Hist
+	from MI3_SAP
+	where  FECHAOPERACION between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHAOPERACION), datepart(month, FECHAOPERACION), datepart(day, FECHAOPERACION)
+	UNION
+	select 'MI3_SAP' Tabla,datepart(year, FECHAOPERACION) año, datepart(month, FECHAOPERACION) mes, datepart(day, FECHAOPERACION) dia, 0 Cant_Reg,count(CODIGOLIQUIDACION) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.MI3_SAP
+	where  FECHAOPERACION between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHAOPERACION), datepart(month, FECHAOPERACION), datepart(day, FECHAOPERACION)
+	UNION
+	select 'P_DIFLIQ' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_DIFLIQ
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_DIFLIQ' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_DIFLIQ
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_DIFLIQ_DET' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, count(D.CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_DIFLIQ_DET D INNER JOIN P_DIFLIQ E ON D.CODIGO = E.CODIGO  AND E.CODIGO_LIQUIDACION = D.CODIGOLIQUIDACION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'P_DIFLIQ_DET' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg, count(D.CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_DIFLIQ_DET D INNER JOIN ROADSAP_HIST_4.dbo.P_DIFLIQ E ON D.CODIGO = E.CODIGO  AND E.CODIGO_LIQUIDACION = D.CODIGOLIQUIDACION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'P_LIQUIDACION' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_LIQUIDACION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_LIQUIDACION' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_LIQUIDACION
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_LIQUIDACION_DET' Tabla, datepart(year, P_LIQUIDACION.fecha) año, datepart(month, P_LIQUIDACION.fecha) mes, datepart(day, P_LIQUIDACION.fecha) dia, count(P_LIQUIDACION_DET.CODIGO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_LIQUIDACION_DET INNER JOIN P_LIQUIDACION ON P_LIQUIDACION_DET.CODIGO = P_LIQUIDACION.CODIGO
+	where  P_LIQUIDACION.fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, P_LIQUIDACION.fecha), datepart(month, P_LIQUIDACION.fecha), datepart(day, P_LIQUIDACION.fecha)
+	UNION
+	select 'P_LIQUIDACION_DET' Tabla, datepart(year, E.fecha) año, datepart(month, E.fecha) mes, datepart(day, E.fecha) dia, 0 Cant_Reg, count(D.CODIGO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_LIQUIDACION_DET D INNER JOIN ROADSAP_HIST_4.dbo.P_LIQUIDACION E ON E.CODIGO = D.CODIGO
+	where  E.fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, E.fecha), datepart(month, E.fecha), datepart(day, E.fecha)
+	UNION
+	select 'P_NOTACD' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(CODIGONCD) Cant_Reg, 0 Cant_Reg_Hist
+	from P_NOTACD
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_NOTACD' Tabla,datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg,count(CODIGONCD) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_NOTACD
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_NOTACDD' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, count(P_NOTACDD.CODIGONCD) Cant_Reg, 0 Cant_Reg_Hist
+	from P_NOTACDD INNER JOIN P_NOTACD ON P_NOTACDD.CODIGONCD = P_NOTACD.CODIGONCD
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'P_NOTACDD' Tabla, datepart(year, fecha) año, datepart(month, fecha) mes, datepart(day, fecha) dia, 0 Cant_Reg, count(ROADSAP_HIST_4.dbo.P_NOTACDD.CODIGONCD) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_NOTACDD INNER JOIN ROADSAP_HIST_4.dbo.P_NOTACD ON P_NOTACDD.CODIGONCD = P_NOTACD.CODIGONCD
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, fecha), datepart(month, fecha), datepart(day, fecha)
+	UNION
+	select 'D_FACTURA_CONTROL_CONTINGENCIA' Tabla, datepart(year, FECHA_AGR) año, datepart(month, FECHA_AGR) mes, datepart(day, FECHA_AGR) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_FACTURA_CONTROL_CONTINGENCIA
+	where  CONVERT(DATE, Fecha_Agr) between @FechaInicial and @FechaFinal and Cufe is not null
+	group by  datepart(year, FECHA_AGR), datepart(month, FECHA_AGR), datepart(day, FECHA_AGR)
+	UNION
+	select 'D_FACTURA_CONTROL_CONTINGENCIA' Tabla,datepart(year, FECHA_AGR) año, datepart(month, FECHA_AGR) mes, datepart(day, FECHA_AGR) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_FACTURA_CONTROL_CONTINGENCIA
+	where  CONVERT(DATE, Fecha_Agr) between @FechaInicial and @FechaFinal and Cufe is not null
+	group by  datepart(year, FECHA_AGR), datepart(month, FECHA_AGR), datepart(day, FECHA_AGR)
+	UNION
+	select 'D_POS_TRANS' Tabla, datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, count(COREL) Cant_Reg, 0 Cant_Reg_Hist
+	from D_POS_TRANS
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'D_POS_TRANS' Tabla,datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, 0 Cant_Reg,count(COREL) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.D_POS_TRANS
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCK' Tabla, datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, count(DOCUMENTO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_STOCK
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCK' Tabla,datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, 0 Cant_Reg,count(DOCUMENTO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_STOCK
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCKB' Tabla, datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, count(DOCUMENTO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_STOCKB
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCKB' Tabla,datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, 0 Cant_Reg,count(DOCUMENTO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_STOCKB
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCK_PV' Tabla, datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, count(DOCUMENTO) Cant_Reg, 0 Cant_Reg_Hist
+	from P_STOCK_PV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	UNION
+	select 'P_STOCK_PV' Tabla,datepart(year, FECHA) año, datepart(month, FECHA) mes, datepart(day, FECHA) dia, 0 Cant_Reg,count(DOCUMENTO) Cant_Reg_Hist
+	from ROADSAP_HIST_4.dbo.P_STOCK_PV
+	where  fecha between @FechaInicial and @FechaFinal
+	group by  datepart(year, FECHA), datepart(month, FECHA), datepart(day, FECHA)
+	) AS t
+	Group by t.Tabla, t.año, t.mes, t.dia
+	--having SUM(t.Cant_Reg) - SUM(t.Cant_Reg_Hist)>0
+	order by t.Tabla, t.año, t.mes, t.dia
+
+	SELECT @Registros = (SELECT COUNT(*) FROM P_COMPARATIVO_HISTORICO)
+	  
+	RETURN @Registros
+ 
+END
+GO
 -- ================================================
 SET ANSI_NULLS ON
 GO
