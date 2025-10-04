@@ -1,3 +1,12 @@
+--2025-10-03 Agregamos la opción del menú para los Retornos prefactura
+INSERT INTO P_MENUSISTEMA VALUES('4.34',1,'Retornos prefactura','tsmiRetornos',2,'4')
+INSERT INTO P_MENUROL VALUES(1, 3900, '4.34',1,1)
+INSERT INTO P_MENUROL VALUES(13, 3903, '4.34',1,1)
+INSERT INTO P_MENUROL VALUES(14, 3903, '4.34',1,1)
+INSERT INTO P_MENUROL VALUES(41, 3905, '4.34',1,1)
+INSERT INTO P_MENUROL VALUES(42, 3905, '4.34',1,1)
+INSERT INTO P_MENUROL VALUES(27, 3904, '4.34',1,1)
+
 --2024-07-15 Parametrizar permiso Razones de despacho incompleto
 INSERT INTO P_MENUSISTEMA VALUES('1.9.11',1,'Razones de despacho incompleto','tsmiRazonesDeDespachoIncompleto',	3,'1.9')
 INSERT INTO P_MENUROL VALUES(1, 3900, '1.9.11',1,1)
