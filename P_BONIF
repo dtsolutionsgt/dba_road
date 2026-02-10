@@ -1,0 +1,7 @@
+
+alter table P_BONIF add UMVENTA nvarchar (25)
+
+alter table P_BONIF add UMSTOCK nvarchar (25)
+
+alter table P_BONIF add UMPESO nvarchar (25)
+ 
