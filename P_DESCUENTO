@@ -1,0 +1,4 @@
+alter table p_descuento add UMVENTA nvarchar (25)
+alter table p_descuento add UMSTOCK nvarchar (25)
+alter table p_descuento add UMPESO nvarchar (25)
+ 
